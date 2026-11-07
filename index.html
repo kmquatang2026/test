@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mobile CAPTCHA - Xác thực ưu đãi</title>
+
+<!-- Facebook Pixel Code -->
+<script>
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+
+fbq('init', '1675656813428105'); 
+fbq('track', 'PageView');
+</script>
+<noscript>
+  <img height="1" width="1" style="display:none"
+       src="https://www.facebook.com/tr?id=1675656813428105&ev=PageView&noscript=1"/>
+</noscript>
+<!-- End Facebook Pixel Code -->
+
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  color: #fff;
+}
+
+.wrapper {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 16px;
+}
+
+.container {
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Captcha Box */
+.captcha-box {
+  width: 100%;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.captcha-left {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.checkbox-container {
+  position: relative;
+  width: 32px;
+  height: 32px;
+  margin-right: 14px;
+}
+
+.checkbox-custom {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 32px;
+  height: 32px;
+  background-color: rgba(255, 255, 255, 0.08);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.captcha-left:hover .checkbox-custom {
+  border-color: #38bdf8;
+  background-color: rgba(56, 189, 248, 0.1);
+}
+
+.captcha-left input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+.captcha-left input:checked ~ .checkbox-custom {
+  background-color: #10b981;
+  border-color: #10b981;
+  transform: scale(0.95);
+}
+
+.loader {
+  display: none;
+  width: 24px;
+  height: 24px;
+  border: 3px solid rgba(255,255,255,0.2);
+  border-top: 3px solid #38bdf8;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  position: absolute;
+  top: 4px;
+  left: 4px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.checkmark {
+  display: none;
+  width: 32px;
+  height: 32px;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+.checkmark:after {
+  content: "";
+  position: absolute;
+  left: 11px;
+  top: 6px;
+  width: 8px;
+  height: 14px;
+  border: solid #fff;
+  border-width: 0 3px 3px 0;
+  transform: rotate(45deg);
+}
+
+.captcha-text {
+  font-size: 15px;
+  color: #f1f5f9;
+  font-weight: 500;
+  user-select: none;
+}
+
+.captcha-right {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.captcha-right img {
+  width: 28px;
+  height: 28px;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+}
+
+.captcha-right span {
+  font-size: 9px;
+  color: #94a3b8;
+  margin-top: 4px;
+  text-align: center;
+}
+
+/* Light Bar */
+.light-bar-container {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: transparent;
+  overflow: hidden;
+  border-bottom-left-radius: 16px;
+  border-bottom-right-radius: 16px;
+}
+
+.light-bar {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent 0%, #38bdf8 50%, transparent 100%);
+}
+
+/* Khung Lựa Chọn Gói Quà */
+.offer-section {
+  display: none;
+  width: 100%;
+  margin-top: 18px;
+  animation: fadeIn 0.4s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.offer-header {
+  text-align: center;
+  margin-bottom: 14px;
+}
+
+.offer-header h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: #38bdf8;
+  margin-bottom: 4px;
+}
+
+.offer-header p {
+  font-size: 12px;
+  color: #cbd5e1;
+}
+
+/* Thẻ Gói Khuyến Mãi */
+.offer-card {
+  position: relative;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  user-select: none;
+}
+
+/* Gói Nạp Đầu - Hiệu ứng VIP */
+.offer-vip {
+  border: 1.5px solid #f59e0b;
+  background: linear-gradient(145deg, rgba(245, 158, 11, 0.12) 0%, rgba(30, 41, 59, 0.8) 100%);
+  box-shadow: 0 0 20px rgba(245, 158, 11, 0.2);
+}
+
+.offer-vip:active {
+  transform: scale(0.98);
+}
+
+.badge-hot {
+  position: absolute;
+  top: -10px;
+  right: 14px;
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 20px;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 6px rgba(239, 68, 68, 0.4);
+}
+
+.offer-title {
+  font-size: 15px;
+  font-weight: 800;
+  color: #fbbf24;
+  margin-bottom: 5px;
+}
+
+.offer-desc {
+  font-size: 12px;
+  color: #e2e8f0;
+  line-height: 1.4;
+  margin-bottom: 10px;
+}
+
+.offer-desc b {
+  color: #38bdf8;
+}
+
+.btn-vip-action {
+  width: 100%;
+  padding: 11px;
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.35);
+}
+
+/* Gói Free 20K - Tone Xám Chìm */
+.offer-free {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.02);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 16px;
+}
+
+.offer-free:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.offer-free-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #94a3b8;
+}
+
+.offer-free-sub {
+  font-size: 11px;
+  color: #64748b;
+  margin-top: 2px;
+}
+
+.btn-free-action {
+  padding: 8px 14px;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  border-radius: 6px;
+  color: #cbd5e1;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+</style>
+</head>
+
+<body>
+
+<div class="wrapper">
+  <div class="container">
+
+    <!-- 1. Captcha Xác thực -->
+    <div class="captcha-box" id="captchaBox">
+      <label class="captcha-left" id="captchaLabel">
+        <div class="checkbox-container">
+          <input type="checkbox" id="captchaCheck" onchange="verifyCaptcha(this)">
+          <div class="checkbox-custom" id="boxCustom"></div>
+          <div class="loader" id="captchaLoader"></div>
+          <div class="checkmark" id="captchaCheckmark"></div>
+        </div>
+        <span class="captcha-text" id="captchaStatusText">Tôi không phải là người máy</span>
+      </label>
+
+      <div class="captcha-right">
+        <img src="https://www.gstatic.com/recaptcha/api2/logo_48.png" alt="recaptcha">
+        <span>Bảo mật</span>
+      </div>
+
+      <div class="light-bar-container">
+        <div class="light-bar" id="lightBar"></div>
+      </div>
+    </div>
+
+    <!-- 2. Khung Chọn Gói Quà Tặng (Mở ra sau khi tích Captcha) -->
+    <div class="offer-section" id="offerSection">
+      
+      <div class="offer-header">
+        <h3>XÁC MINH HOÀN TẤT</h3>
+        <p>Chọn gói khuyến mãi để áp dụng vào tài khoản của bạn:</p>
+      </div>
+
+      <!-- NÚT 1 (GÓI NẠP ĐẦU VIP): KÍCH HOẠT PIXEL -->
+      <div class="offer-card offer-vip" onclick="handleSelectTier('DEPOSIT')">
+        <div class="badge-hot">ĐỀ XUẤT HOT</div>
+        <div class="offer-title">🎁 NẠP ĐẦU X3 TÀI KHOẢN (TỪ 100K)</div>
+        <div class="offer-desc">
+          Tặng thêm <b>Code 50K</b> độc quyền.<br>
+          <i>(Sau khi nạp đầu thành công, nhắn tin Fanpage để nhận)</i>
+        </div>
+        <button class="btn-vip-action">CHỌN GÓI X3 & NHẬN CODE 50K</button>
+      </div>
+
+      <!-- NÚT 2 (GÓI 20K FREE): KHÔNG BẮN PIXEL -->
+      <div class="offer-card offer-free" onclick="handleSelectTier('FREE')">
+        <div>
+          <div class="offer-free-title">Chỉ nhận 20K trải nghiệm miễn phí</div>
+          <div class="offer-free-sub">Không áp dụng ưu đãi nạp tiền & Code Fanpage</div>
+        </div>
+        <button class="btn-free-action">Tiếp tục »</button>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<script>
+const TARGET_URL = "https://388beta.online/?a=4efdbd60edb5ded14a3249791ce266c8&utm_campaign=facebookads&utm_source=gerto&utm_medium=conversion&referrer_domain=Facebook";
+
+function verifyCaptcha(checkbox) {
+  if (checkbox.checked) {
+    checkbox.disabled = true;
+    document.getElementById("captchaLabel").style.cursor = "default";
+
+    const loader = document.getElementById("captchaLoader");
+    const checkmark = document.getElementById("captchaCheckmark");
+    const customBox = document.getElementById("boxCustom");
+    const statusText = document.getElementById("captchaStatusText");
+
+    customBox.style.display = "none";
+    loader.style.display = "block";
+    statusText.innerText = "Đang xác thực hệ thống...";
+
+    setTimeout(() => {
+      loader.style.display = "none";
+      checkmark.style.display = "block";
+      statusText.innerText = "Đã xác minh bảo mật!";
+
+      // Chạy hiệu ứng thanh sáng
+      const bar = document.getElementById("lightBar");
+      bar.style.transition = "left 0.4s ease-in-out";
+      bar.style.left = "100%";
+
+      // Hiển thị 2 lựa chọn ưu đãi
+      setTimeout(() => {
+        document.getElementById("offerSection").style.display = "block";
+      }, 400);
+
+    }, 600);
+  }
+}
+
+let isRedirecting = false;
+
+function handleSelectTier(tier) {
+  if (isRedirecting) return;
+  isRedirecting = true;
+
+  if (tier === 'DEPOSIT') {
+    // CHỈ BẮN PIXEL VỚI NGƯỜI CHỌN GÓI NẠP ĐẦU
+    if (typeof fbq === 'function') {
+      fbq('track', 'CompleteRegistration', {
+        content_name: 'Goi_Nap_Dau_X3',
+        value: 100000,
+        currency: 'VND'
+      });
+    }
+  }
+
+  // Đợi 350ms đảm bảo gói tin Pixel gửi đi trọn vẹn rồi mới chuyển trang
+  setTimeout(() => {
+    window.location.href = TARGET_URL;
+  }, 350);
+}
+</script>
+
+</body>
+</html>
