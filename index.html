@@ -177,6 +177,7 @@ body {
   text-align: center;
 }
 
+/* Light Bar */
 .light-bar-container {
   position: absolute;
   bottom: 0;
@@ -233,10 +234,6 @@ body {
   position: relative;
   width: 100%;
   border-radius: 14px;
-  padding: 16px;
-  margin-bottom: 12px;
-  cursor: pointer;
-  transition: all 0.25s ease;
   user-select: none;
 }
 
@@ -245,6 +242,10 @@ body {
   border: 1.5px solid #f59e0b;
   background: linear-gradient(145deg, rgba(245, 158, 11, 0.15) 0%, rgba(30, 41, 59, 0.85) 100%);
   box-shadow: 0 0 20px rgba(245, 158, 11, 0.25);
+  padding: 16px;
+  margin-bottom: 14px;
+  cursor: pointer;
+  transition: all 0.25s ease;
 }
 
 .offer-vip:active {
@@ -296,29 +297,37 @@ body {
   box-shadow: 0 4px 12px rgba(245, 158, 11, 0.35);
 }
 
-/* Gói Free 20K - Nổi nhẹ nhàng, tinh tế */
+/* Gói Free 20K - Nổi rõ ràng & cảnh báo trực quan */
 .offer-free {
   border: 1.5px solid rgba(56, 189, 248, 0.45);
-  background: linear-gradient(145deg, rgba(56, 189, 248, 0.08) 0%, rgba(30, 41, 59, 0.6) 100%);
+  background: linear-gradient(145deg, rgba(56, 189, 248, 0.08) 0%, rgba(30, 41, 59, 0.75) 100%);
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 14px 16px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  flex-direction: column;
+  padding: 16px;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+  gap: 12px;
 }
 
 .offer-free:hover {
   border-color: #38bdf8;
-  background: linear-gradient(145deg, rgba(56, 189, 248, 0.15) 0%, rgba(30, 41, 59, 0.8) 100%);
-  transform: translateY(-1px);
+  background: linear-gradient(145deg, rgba(56, 189, 248, 0.14) 0%, rgba(30, 41, 59, 0.85) 100%);
 }
 
 .offer-free:active {
   transform: scale(0.98);
 }
 
+.offer-free-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .offer-free-title {
-  font-size: 14px;
+  font-size: 14.5px;
   font-weight: 700;
   color: #f1f5f9;
   display: flex;
@@ -326,22 +335,41 @@ body {
   gap: 6px;
 }
 
-.offer-free-sub {
-  font-size: 11.5px;
+.offer-free-badge {
+  font-size: 11px;
+  font-weight: 600;
   color: #94a3b8;
-  margin-top: 3px;
+  background: rgba(255, 255, 255, 0.08);
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+
+/* Khung cảnh báo mất quyền lợi */
+.offer-free-alert {
+  background: rgba(239, 68, 68, 0.1);
+  border-left: 3px solid #f87171;
+  padding: 8px 10px;
+  border-radius: 4px;
+  font-size: 11.5px;
+  color: #cbd5e1;
+  line-height: 1.45;
+}
+
+.offer-free-alert b {
+  color: #fca5a5;
 }
 
 .btn-free-action {
-  padding: 9px 15px;
-  background: rgba(56, 189, 248, 0.2);
-  border: 1px solid rgba(56, 189, 248, 0.5);
+  width: 100%;
+  padding: 10px;
+  background: rgba(56, 189, 248, 0.15);
+  border: 1px solid rgba(56, 189, 248, 0.4);
   border-radius: 8px;
   color: #38bdf8;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
   cursor: pointer;
-  white-space: nowrap;
+  text-align: center;
   transition: all 0.2s;
 }
 
@@ -398,13 +426,20 @@ body {
         <button class="btn-vip-action">CHỌN GÓI X3 & NHẬN CODE 50K</button>
       </div>
 
-      <!-- NÚT 2 (GÓI 20K FREE): SÁNG RÕ NHƯNG KHÔNG BẮN PIXEL -->
+      <!-- NÚT 2 (GÓI 20K FREE): NHẤN MẠNH MẤT KHUYẾN MÃI NẠP & CODE 50K -->
       <div class="offer-card offer-free" onclick="handleSelectTier('FREE')">
-        <div>
-          <div class="offer-free-title">🎁 Nhận 20K trải nghiệm miễn phí</div>
-          <div class="offer-free-sub">Chơi thử ngay • Không áp dụng khuyến mãi nạp</div>
+        <div class="offer-free-header">
+          <div class="offer-free-title">🎁 Nhận 20K Trải Nghiệm Miễn Phí</div>
+          <span class="offer-free-badge">Tài khoản thường</span>
         </div>
-        <button class="btn-free-action">Chọn gói »</button>
+
+        <div class="offer-free-alert">
+          ⛔ <b>Lưu ý giới hạn:</b><br>
+          • <b>KHÔNG</b> áp dụng ưu đãi X3 nạp đầu.<br>
+          • <b>KHÔNG</b> được nhận Giftcode 50K qua Fanpage.
+        </div>
+
+        <button class="btn-free-action">Vẫn chọn nhận 20K trải nghiệm »</button>
       </div>
 
     </div>
