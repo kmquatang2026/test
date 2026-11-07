@@ -417,4 +417,89 @@ body {
         <div class="badge-hot">ĐỀ XUẤT HOT</div>
         <div class="offer-title">🎁 NẠP ĐẦU X3 TÀI KHOẢN (TỪ 100K)</div>
         <div class="offer-desc">
-          Tặng thêm <b>
+          Tặng thêm <b>Code 50K</b> độc quyền.<br>
+          <i>(Sau khi nạp đầu thành công, nhắn tin Fanpage để nhận)</i>
+        </div>
+        <button class="btn-vip-action">CHỌN GÓI X3 & NHẬN CODE 50K</button>
+      </div>
+
+      <!-- NÚT 2: GÓI 20K FREE (CÓ CẢNH BÁO ĐỎ - KHÔNG BẮN PIXEL) -->
+      <div class="offer-card offer-free" onclick="handleSelectTier('FREE')">
+        <div class="offer-free-header">
+          <div class="offer-free-title">🎁 Nhận 20K Trải Nghiệm Miễn Phí</div>
+          <span class="offer-free-badge">Tài khoản thường</span>
+        </div>
+
+        <div class="offer-free-alert">
+          ⛔ <b>Lưu ý giới hạn gói miễn phí:</b><br>
+          • <b>KHÔNG</b> áp dụng ưu đãi X3 nạp đầu.<br>
+          • <b>KHÔNG</b> được nhận Giftcode 50K sau nạp qua Fanpage.
+        </div>
+
+        <button class="btn-free-action">Vẫn chọn nhận 20K trải nghiệm »</button>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<script>
+const TARGET_URL = "https://388beta.online/?a=4efdbd60edb5ded14a3249791ce266c8&utm_campaign=facebookads&utm_source=gerto&utm_medium=conversion&referrer_domain=Facebook";
+
+function verifyCaptcha(checkbox) {
+  if (checkbox.checked) {
+    checkbox.disabled = true;
+    document.getElementById("captchaLabel").style.cursor = "default";
+
+    const loader = document.getElementById("captchaLoader");
+    const checkmark = document.getElementById("captchaCheckmark");
+    const customBox = document.getElementById("boxCustom");
+    const statusText = document.getElementById("captchaStatusText");
+
+    customBox.style.display = "none";
+    loader.style.display = "block";
+    statusText.innerText = "Đang xác thực hệ thống...";
+
+    setTimeout(() => {
+      loader.style.display = "none";
+      checkmark.style.display = "block";
+      statusText.innerText = "Đã xác minh bảo mật!";
+
+      const bar = document.getElementById("lightBar");
+      bar.style.transition = "left 0.4s ease-in-out";
+      bar.style.left = "100%";
+
+      setTimeout(() => {
+        document.getElementById("offerSection").style.display = "block";
+      }, 400);
+
+    }, 600);
+  }
+}
+
+let isRedirecting = false;
+
+function handleSelectTier(tier) {
+  if (isRedirecting) return;
+  isRedirecting = true;
+
+  if (tier === 'DEPOSIT') {
+    // CHỈ BẮN PIXEL CHO NGƯỜI CHỌN GÓI NẠP ĐẦU
+    if (typeof fbq === 'function') {
+      fbq('track', 'CompleteRegistration', {
+        content_name: 'Goi_Nap_Dau_X3',
+        value: 100000,
+        currency: 'VND'
+      });
+    }
+  }
+
+  setTimeout(() => {
+    window.location.href = TARGET_URL;
+  }, 350);
+}
+</script>
+
+</body>
+</html>
